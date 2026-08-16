@@ -1,0 +1,14 @@
+{
+  "names": {
+    "tonysly": "npub146j2myq28t6nw87e0v89q0tq47wcmsvkpdxszc5wkyqtgfsvuh7q8k2jsd"
+  },
+  "relays": {
+    "npub146j2myq28t6nw87e0v89q0tq47wcmsvkpdxszc5wkyqtgfsvuh7q8k2jsd": [
+      "wss://relay.damus.io",
+      "wss://relay.snort.social",
+      "wss://nos.lol",
+      "wss://nostr.wine",
+      "wss://relay.current.fyi"
+    ]
+  }
+}

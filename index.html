@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>No Blue Check For Me</title>
+    <meta name="description" content="A movement against paid verification. Real credibility through cryptographic identity.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --black: #000000;
+            --white: #ffffff;
+            --gray-dark: #1a1a1a;
+            --gray-light: #cccccc;
+            --accent-green: #00ff00;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: var(--black);
+            color: var(--white);
+            line-height: 1.6;
+            overflow-x: hidden;
+            border: 2px solid var(--white);
+        }
+
+        /* Cypherpunk grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Navigation */
+        nav {
+            position: sticky;
+            top: 0;
+            background: var(--black);
+            border-bottom: 2px solid var(--white);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-green);
+            text-shadow: 0 0 10px var(--accent-green);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 1px solid var(--white);
+            padding: 0.5rem 1rem;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        nav a:hover {
+            background: var(--white);
+            color: var(--black);
+            box-shadow: 0 0 10px var(--white);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            border-bottom: 2px solid var(--white);
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 800px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 10vw, 4rem);
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-green);
+            text-shadow: 0 0 20px var(--accent-green);
+        }
+
+        .hero .icon {
+            display: inline-block;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            letter-spacing: 1px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid var(--white);
+            background: var(--black);
+            color: var(--white);
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .btn:hover {
+            background: var(--white);
+            color: var(--black);
+            box-shadow: 0 0 20px var(--white);
+        }
+
+        .btn-accent {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .btn-accent:hover {
+            background: var(--accent-green);
+            color: var(--black);
+            box-shadow: 0 0 20px var(--accent-green);
+        }
+
+        /* Section General */
+        section {
+            padding: 4rem 2rem;
+            border-bottom: 2px solid var(--white);
+        }
+
+        section h2 {
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            margin-bottom: 2rem;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Why Section */
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            border: 2px solid var(--white);
+            padding: 2rem;
+            transition: all 0.2s;
+            background: var(--black);
+        }
+
+        .card:hover {
+            box-shadow: 0 0 20px var(--white);
+            border-color: var(--accent-green);
+        }
+
+        .card h3 {
+            color: var(--accent-green);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card p {
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+
+        /* Nostr Section */
+        .nostr-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nostr-intro {
+            background: var(--gray-dark);
+            border: 2px solid var(--white);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            line-height: 1.9;
+        }
+
+        .nostr-intro h3 {
+            color: var(--accent-green);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+        }
+
+        /* Clients Grid */
+        .clients-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .client-category {
+            border: 2px solid var(--white);
+            padding: 2rem;
+            background: var(--black);
+        }
+
+        .client-category:hover {
+            box-shadow: 0 0 20px var(--accent-green);
+            border-color: var(--accent-green);
+        }
+
+        .client-platform {
+            color: var(--accent-green);
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--accent-green);
+            padding-bottom: 0.8rem;
+        }
+
+        .client-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .client-item {
+            padding: 1rem;
+            background: var(--gray-dark);
+            border-left: 3px solid var(--white);
+            transition: all 0.2s;
+        }
+
+        .client-item:hover {
+            border-left-color: var(--accent-green);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+        }
+
+        .client-item h5 {
+            color: var(--white);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .client-item p {
+            font-size: 0.85rem;
+            color: var(--gray-light);
+            margin-bottom: 0.8rem;
+        }
+
+        .client-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .client-links a {
+            color: var(--accent-green);
+            text-decoration: none;
+            font-size: 0.85rem;
+            border: 1px solid var(--accent-green);
+            padding: 0.4rem 0.8rem;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+
+        .client-links a:hover {
+            background: var(--accent-green);
+            color: var(--black);
+            box-shadow: 0 0 10px var(--accent-green);
+        }
+
+        .nostr-benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .benefit {
+            border: 2px solid var(--white);
+            padding: 1.5rem;
+            background: var(--black);
+            transition: all 0.2s;
+        }
+
+        .benefit:hover {
+            box-shadow: 0 0 20px var(--accent-green);
+            border-color: var(--accent-green);
+        }
+
+        .benefit h4 {
+            color: var(--accent-green);
+            margin-bottom: 0.8rem;
+            text-transform: uppercase;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .benefit p {
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        /* Manifesto Section */
+        .manifesto-text {
+            max-width: 900px;
+            margin: 0 auto;
+            font-size: 1rem;
+            line-height: 2;
+            text-align: center;
+        }
+
+        .manifesto-point {
+            background: var(--gray-dark);
+            border-left: 3px solid var(--accent-green);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+        /* Join Container */
+        .join-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .join-container p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        /* NIP-05 Identity Card */
+        .nip05-card {
+            border: 2px solid var(--accent-green);
+            padding: 2rem;
+            margin: 2rem 0;
+            background: var(--gray-dark);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+
+        .nip05-card h3 {
+            color: var(--accent-green);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.2rem;
+        }
+
+        .identity-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            text-align: left;
+        }
+
+        .identity-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .identity-field label {
+            font-size: 0.9rem;
+            color: var(--accent-green);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .identity-field code {
+            background: var(--black);
+            border: 1px solid var(--white);
+            padding: 1rem;
+            font-size: 0.85rem;
+            word-break: break-all;
+            color: var(--accent-green);
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+            display: block;
+            overflow-x: auto;
+        }
+
+        .identity-field code.npub {
+            font-size: 0.8rem;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--gray-dark);
+            border: 2px solid var(--accent-green);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--accent-green);
+            text-shadow: 0 0 5px var(--accent-green);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--black);
+            border-top: 2px solid var(--white);
+            padding: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        footer a {
+            color: var(--accent-green);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        footer a:hover {
+            text-shadow: 0 0 10px var(--accent-green);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            nav a {
+                width: 100%;
+                text-align: center;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            body {
+                border: 1px solid var(--white);
+            }
+
+            section {
+                padding: 2rem 1rem;
+            }
+        }
+
+        /* Glitch effect for accent text */
+        .glitch {
+            position: relative;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            animation: glitch-1 0.3s ease-in-out infinite;
+            color: var(--accent-green);
+            z-index: -1;
+        }
+
+        .glitch::after {
+            animation: glitch-2 0.3s ease-in-out infinite;
+            color: var(--accent-green);
+            z-index: -2;
+        }
+
+        @keyframes glitch-1 {
+            0% { clip-path: inset(40% 0 61% 0); transform: translate(-2px, -2px); }
+            20% { clip-path: inset(92% 0 1% 0); transform: translate(2px, 2px); }
+            40% { clip-path: inset(43% 0 1% 0); transform: translate(-2px, 2px); }
+            60% { clip-path: inset(25% 0 58% 0); transform: translate(2px, -2px); }
+            80% { clip-path: inset(54% 0 7% 0); transform: translate(-2px, -2px); }
+            100% { clip-path: inset(58% 0 43% 0); transform: translate(2px, 2px); }
+        }
+
+        @keyframes glitch-2 {
+            0% { clip-path: inset(27% 0 58% 0); transform: translate(2px, 2px); }
+            20% { clip-path: inset(20% 0 60% 0); transform: translate(-2px, -2px); }
+            40% { clip-path: inset(51% 0 1% 0); transform: translate(2px, -2px); }
+            60% { clip-path: inset(21% 0 58% 0); transform: translate(-2px, 2px); }
+            80% { clip-path: inset(88% 0 4% 0); transform: translate(2px, -2px); }
+            100% { clip-path: inset(40% 0 59% 0); transform: translate(-2px, -2px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">⚔ NO BLUE CHECK</div>
+        <ul>
+            <li><a href="#why">Why</a></li>
+            <li><a href="#nostr">Nostr</a></li>
+            <li><a href="#manifesto">Manifesto</a></li>
+            <li><a href="#join">Join</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="icon">⚡</div>
+            <h1>I Don't Need a <span class="glitch" data-text="Blue Check">Blue Check</span></h1>
+            <p>Cryptographic identity. Not corporate approval. Real credibility through verifiable proof, not paid subscription.</p>
+            <div class="cta-buttons">
+                <a href="#join" class="btn btn-accent">Join the Movement</a>
+                <a href="#manifesto" class="btn">Read the Manifesto</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Section -->
+    <section id="why">
+        <h2>Why Verification Failed</h2>
+        <div class="why-grid">
+            <div class="card">
+                <h3>$ Commodified Credibility</h3>
+                <p>Verification was meant to prove identity. Now it proves you have $8/month. Credibility cannot be purchased. It must be earned.</p>
+            </div>
+            <div class="card">
+                <h3>🎭 Bad Actors Everywhere</h3>
+                <p>When verification is pay-to-play, scammers and bots gain the very badge meant to identify them. The system is broken at its core.</p>
+            </div>
+            <div class="card">
+                <h3>📊 Algorithmic Inequality</h3>
+                <p>Verified accounts get algorithmic boost. This creates a two-tier internet where wealth determines reach, not merit or truth.</p>
+            </div>
+            <div class="card">
+                <h3>🏛️ Centralized Control</h3>
+                <p>A single corporation controls who is "verified." This is the opposite of freedom. Your identity should not be gatekept by a corporation.</p>
+            </div>
+            <div class="card">
+                <h3>🤖 Impossible to Trust</h3>
+                <p>With AI and synthetic media everywhere, a paid badge actually makes verification harder. Real credibility requires cryptographic proof.</p>
+            </div>
+            <div class="card">
+                <h3>✊ The Only Response: Opt Out</h3>
+                <p>Refuse to participate. Your credibility stands on its own merit. That's the real power—you don't need permission to be yourself.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Nostr Section -->
+    <section id="nostr">
+        <h2>Nostr: The Alternative</h2>
+        <div class="nostr-container">
+            <div class="nostr-intro">
+                <h3>What is Nostr?</h3>
+                <p><strong>Nostr</strong> stands for "Notes and Other Stuff Transmitted by Relays." It is a simple, open protocol for censorship-resistant, decentralized communication. Unlike Twitter, Nostr is not owned or controlled by any single company. Instead, it's a network where:</p>
+                <ul style="margin-left: 2rem; margin-top: 1rem;">
+                    <li><strong>Your identity is cryptographic:</strong> Verified by a public-private key pair, not by corporate permission.</li>
+                    <li><strong>You own your data:</strong> Your posts live on relays you choose. No single entity can delete your history or shadow-ban you.</li>
+                    <li><strong>Interoperability is built-in:</strong> Use any client. Switch whenever you want. Your identity follows you everywhere.</li>
+                    <li><strong>Censorship is impossible:</strong> Posts replicate across independent relays. No single point of failure.</li>
+                    <li><strong>Trust is verifiable:</strong> Cryptographic signatures prove authenticity. No fake blue checks needed.</li>
+                </ul>
+            </div>
+
+            <h3 style="text-align: center; margin: 3rem 0 2rem 0; text-transform: uppercase; letter-spacing: 1px;">Nostr Clients by Platform</h3>
+            <div class="clients-grid">
+                <!-- Web/Desktop Clients -->
+                <div class="client-category">
+                    <h4 class="client-platform">💻 Web & Desktop</h4>
+                    <div class="client-list">
+                        <div class="client-item">
+                            <h5>Snort</h5>
+                            <p>Web-based client with excellent UX</p>
+                            <div class="client-links">
+                                <a href="https://snort.social" target="_blank" rel="noopener noreferrer">Website</a>
+                                <a href="https://github.com/snort-social/snort" target="_blank" rel="noopener noreferrer">GitHub</a>
+                            </div>
+                        </div>
+                        <div class="client-item">
+                            <h5>Nostr Console</h5>
+                            <p>Minimalist terminal-style web client</p>
+                            <div class="client-links">
+                                <a href="https://nostrconsole.com" target="_blank" rel="noopener noreferrer">Website</a>
+                                <a href="https://github.com/karanveer/nostrconsole" target="_blank" rel="noopener noreferrer">GitHub</a>
+                            </div>
+                        </div>
+                        <div class="client-item">
+                            <h5>Coracle</h5>
+                            <p>Feature-rich web client with DM support</p>
+                            <div class="client-links">
+                                <a href="https://coracle.social" target="_blank" rel="noopener noreferrer">Website</a>
+                                <a href="https://github.com/coracle-social/coracle" target="_blank" rel="noopener noreferrer">GitHub</a>
+                            </div>
+                        </div>
+                        <div class="client-item">
+                            <h5>Nostter</h5>
+                            <p>Desktop app for Windows, macOS, Linux</p>
+                            <div class="client-links">
+                                <a href="https://github.com/hochuel/nostter" target="_blank" rel="noopener noreferrer">GitHub (Releases)</a>
+                            </div>
+                        </div>
+                        <div class="client-item">
+                            <h5>Aspen</h5>
+                            <p>Lightweight desktop client</p>
+                            <div class="client-links">
+                                <a href="https://github.com/hashrocket/aspen" target="_blank" rel="noopener noreferrer">GitHub</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- iOS Clients -->
+                <div class="client-category">
+                    <h4 class="client-platform">🍎 iOS</h4>
+                    <div class="client-list">
+                        <div class="client-item">
+                            <h5>Damus</h5>
+                            <p>Feature-complete native iOS app</p>
+                            <div class="client-links">
+                                <a href="https://apps.apple.com/us/app/damus/id1628663131" target="_blank" rel="noopener noreferrer">App Store</a>
+                                <a href="https://github.com/damus-io/damus" target="_blank" rel="noopener noreferrer">GitHub</a>
+                            </div>
+                        </div>
+                        <div class="client-item">
+                            <h5>Nostur</h5>
+                            <p>Native SwiftUI client with timeline</p>
+                            <div class="client-links">
+                                <a href="https://apps.apple.com/app/nostur/id1671166531" target="_blank" rel="noopener noreferrer">App Store</a>
+                                <a href="https://github.com/nostur-com/nostur-ios" target="_blank" rel="noopener noreferrer">GitHub</a>
+                            </div>
+                        </div>
+                        <div class="client-item">
+                            <h5>Primal</h5>
+                            <p>High-performance iOS client</p>
+                            <div class="client-links">
+                                <a href="https://apps.apple.com/us/app/primal/id1673134518" target="_blank" rel="noopener noreferrer">App Store</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Android Clients -->
+                <div class="client-category">
+                    <h4 class="client-platform">🤖 Android</h4>
+                    <div class="client-list">
+                        <div class="client-item">
+                            <h5>Amethyst</h5>
+                            <p>Full-featured Android client</p>
+                            <div class="client-links">
+                                <a href="https://play.google.com/store/apps/details?id=com.vitorpamplona.amethyst" target="_blank" rel="noopener noreferrer">Google Play</a>
+                                <a href="https://github.com/vitorpamplona/amethyst" target="_blank" rel="noopener noreferrer">GitHub</a>
+                            </div>
+                        </div>
+                        <div class="client-item">
+                            <h5>Nostr Android</h5>
+                            <p>Minimalist Android client</p>
+                            <div class="client-links">
+                                <a href="https://play.google.com/store/apps/details?id=com.leo.nostr" target="_blank" rel="noopener noreferrer">Google Play</a>
+                                <a href="https://github.com/leanflutter/nostr-android" target="_blank" rel="noopener noreferrer">GitHub</a>
+                            </div>
+                        </div>
+                        <div class="client-item">
+                            <h5>Primal</h5>
+                            <p>High-performance Android client</p>
+                            <div class="client-links">
+                                <a href="https://play.google.com/store/apps/details?id=net.primal" target="_blank" rel="noopener noreferrer">Google Play</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="text-align: center; margin: 3rem 0 2rem 0; text-transform: uppercase; letter-spacing: 1px;">Why Nostr Beats Corporate Verification</h3>
+            <div class="nostr-benefits">
+                <div class="benefit">
+                    <h4>Self-Sovereign Identity</h4>
+                    <p>Your public key is your identity. It cannot be revoked or sold. You control it entirely. No corporation needed.</p>
+                </div>
+                <div class="benefit">
+                    <h4>Cryptographic Proof</h4>
+                    <p>Messages are signed with your private key. Anyone can verify authenticity without trusting a central authority.</p>
+                </div>
+                <div class="benefit">
+                    <h4>No Gatekeeping</h4>
+                    <p>There is no approval process. Create your public key in seconds. No waiting. No paying. No corporate judgment.</p>
+                </div>
+                <div class="benefit">
+                    <h4>Censorship Resistant</h4>
+                    <p>Your content replicates across independent relays worldwide. Even if one relay censors you, your data survives.</p>
+                </div>
+                <div class="benefit">
+                    <h4>True Ownership</h4>
+                    <p>You decide which relays store your data. You can migrate to other clients anytime. Your data is always yours.</p>
+                </div>
+                <div class="benefit">
+                    <h4>Open Protocol</h4>
+                    <p>Nostr is not owned by anyone. It's a standard. Anyone can build clients, relays, and tools. The whole ecosystem is decentralized.</p>
+                </div>
+            </div>
+
+            <div class="code-block">
+// In Nostr, your identity is your public key.
+// No corporation. No verification process. Just cryptography.
+// Your npub: npub1... (derived from your nsec private key)
+            </div>
+        </div>
+    </section>
+
+    <!-- Manifesto Section -->
+    <section id="manifesto">
+        <h2>The Manifesto</h2>
+        <div class="manifesto-text">
+            <div class="manifesto-point">
+                Credibility is earned through integrity, expertise, and authentic engagement. It cannot be purchased.
+            </div>
+            <div class="manifesto-point">
+                A corporate badge does not define you. Your voice, your ideas, and the cryptographic proof of your words define you.
+            </div>
+            <div class="manifesto-point">
+                The internet works best when merit and truth determine reach, not wallet size or corporate approval.
+            </div>
+            <div class="manifesto-point">
+                We reject platforms that have abandoned the principles of freedom. We do not subsidize their betrayal.
+            </div>
+            <div class="manifesto-point">
+                Self-sovereign identity through cryptography is the future. Verification belongs to the individual, not the corporation.
+            </div>
+            <div class="manifesto-point">
+                <strong>If you agree, you're already part of the movement. Refuse the blue check. Embrace decentralized identity.</strong>
+            </div>
+        </div>
+    </section>
+
+    <!-- Join Section -->
+    <section id="join">
+        <h2>Take Action</h2>
+        <div class="join-container">
+            <p>You don't need permission to be yourself. Your authenticity is your greatest asset.</p>
+            
+            <!-- NIP-05 Identity Card -->
+            <div class="nip05-card">
+                <h3>My Nostr Identity</h3>
+                <div class="identity-info">
+                    <div class="identity-field">
+                        <label>NIP-05 Verified Handle:</label>
+                        <code>tonysly@nobluecheckfor.me</code>
+                    </div>
+                    <div class="identity-field">
+                        <label>Public Key (npub):</label>
+                        <code class="npub">npub146j2myq28t6nw87e0v89q0tq47wcmsvkpdxszc5wkyqtgfsvuh7q8k2jsd</code>
+                    </div>
+                    <p style="font-size: 0.9rem; color: var(--gray-light); margin-top: 1rem;">
+                        Verification served from <code>/.well-known/nostr.json</code> — Open, transparent, and truly yours.
+                    </p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 2.5rem; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 1px;">Get Started with Nostr</h3>
+            <div class="cta-buttons">
+                <a href="https://snort.social" class="btn btn-accent">Try Snort (Web)</a>
+                <a href="https://github.com/nostr-protocol/nostr" class="btn">Nostr Protocol</a>
+            </div>
+            <p style="margin-top: 2rem; font-size: 0.9rem; color: var(--gray-light);">
+                Not affiliated with any platform. This is a grassroots statement for decentralized identity.
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>NO BLUE CHECK FOR ME — A movement for cryptographic identity and censorship-resistant communication.</p>
+        <p style="margin-top: 1rem;">Learn more: <a href="https://nostr.com">nostr.com</a> | <a href="https://github.com/nostr-protocol/nostr">GitHub</a></p>
+    </footer>
+</body>
+</html>
